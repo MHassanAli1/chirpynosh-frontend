@@ -176,7 +176,7 @@ export function MediaUpload({
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Images <span className="text-red-500">*</span>
-          <span className="text-gray-400 font-normal ml-1">
+          <span className="text-gray-700 font-medium ml-1">
             ({imageKeys.length}/{maxImages})
           </span>
         </label>
@@ -254,7 +254,7 @@ export function MediaUpload({
           disabled={disabled}
         />
 
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-gray-700 font-medium mt-2">
           Upload 1-5 images (max 10MB each). First image will be the main display image.
         </p>
       </div>
@@ -262,7 +262,7 @@ export function MediaUpload({
       {/* Video Section */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Video <span className="text-gray-400 font-normal">(optional)</span>
+          Video <span className="text-gray-600 font-medium">(optional)</span>
         </label>
 
         {videoKey ? (

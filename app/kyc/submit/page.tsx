@@ -159,7 +159,7 @@ export default function KycSubmitPage() {
                                 }`}>
                                 {step > idx + 1 ? '✓' : idx + 1}
                             </div>
-                            <span className={`ml-2 text-sm ${step === idx + 1 ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                            <span className={`ml-2 text-sm ${step === idx + 1 ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
                                 {label}
                             </span>
                             {idx < 2 && <div className="w-12 h-0.5 bg-gray-200 mx-4" />}
@@ -171,7 +171,7 @@ export default function KycSubmitPage() {
                 {step === 1 && (
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900">Upload Required Documents</h2>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-700">
                             Please upload clear images or PDFs of the following documents (Optional).
                         </p>
 
@@ -221,58 +221,90 @@ export default function KycSubmitPage() {
                 {step === 2 && (
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900">Business Information</h2>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-700">
                             Provide your official business details.
                         </p>
 
                         <div className="space-y-4 mt-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Registered Business Name
+                                    Registered Business Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.businessRegisteredName}
                                     onChange={(e) => setFormData(prev => ({ ...prev, businessRegisteredName: e.target.value }))}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500"
-                                    placeholder="Your registered business name"
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500 ${
+                                        formData.businessRegisteredName && formData.businessRegisteredName.length < 2 
+                                            ? 'border-red-300 bg-red-50' 
+                                            : 'border-gray-300'
+                                    }`}
+                                    placeholder="Your registered business name (min. 2 characters)"
+                                    minLength={2}
                                 />
+                                {formData.businessRegisteredName && formData.businessRegisteredName.length < 2 && (
+                                    <p className="text-xs text-red-600 mt-1">Business name must be at least 2 characters</p>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Tax ID / Registration Number
+                                    Tax ID / Registration Number <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     value={formData.taxId}
                                     onChange={(e) => setFormData(prev => ({ ...prev, taxId: e.target.value }))}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500"
-                                    placeholder="Tax ID or registration number"
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500 ${
+                                        formData.taxId && formData.taxId.length < 5 
+                                            ? 'border-red-300 bg-red-50' 
+                                            : 'border-gray-300'
+                                    }`}
+                                    placeholder="Tax ID or registration number (min. 5 characters)"
+                                    minLength={5}
                                 />
+                                <p className={`text-xs mt-1 ${formData.taxId && formData.taxId.length < 5 ? 'text-red-600' : 'text-gray-500'}`}>
+                                    {formData.taxId ? `${formData.taxId.length}/5 characters` : 'Minimum 5 characters required'}
+                                </p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Business Phone
+                                    Business Phone <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="tel"
                                     value={formData.phoneNumber}
                                     onChange={(e) => setFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500"
-                                    placeholder="+1 (234) 567-8900"
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500 ${
+                                        formData.phoneNumber && formData.phoneNumber.length < 10 
+                                            ? 'border-red-300 bg-red-50' 
+                                            : 'border-gray-300'
+                                    }`}
+                                    placeholder="+1 (234) 567-8900 (min. 10 characters)"
+                                    minLength={10}
                                 />
+                                <p className={`text-xs mt-1 ${formData.phoneNumber && formData.phoneNumber.length < 10 ? 'text-red-600' : 'text-gray-500'}`}>
+                                    {formData.phoneNumber ? `${formData.phoneNumber.length}/10 characters` : 'Minimum 10 characters required'}
+                                </p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Business Address
+                                    Business Address <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     value={formData.businessAddress}
                                     onChange={(e) => setFormData(prev => ({ ...prev, businessAddress: e.target.value }))}
                                     rows={3}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500"
-                                    placeholder="Full business address"
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-slate-900 placeholder:text-slate-500 ${
+                                        formData.businessAddress && formData.businessAddress.length < 10 
+                                            ? 'border-red-300 bg-red-50' 
+                                            : 'border-gray-300'
+                                    }`}
+                                    placeholder="Full business address (min. 10 characters)"
+                                    minLength={10}
                                 />
+                                <p className={`text-xs mt-1 ${formData.businessAddress && formData.businessAddress.length < 10 ? 'text-red-600' : 'text-gray-500'}`}>
+                                    {formData.businessAddress ? `${formData.businessAddress.length}/10 characters` : 'Minimum 10 characters required'}
+                                </p>
                             </div>
                         </div>
 
@@ -285,7 +317,16 @@ export default function KycSubmitPage() {
                             </button>
                             <button
                                 onClick={() => setStep(3)}
-                                disabled={!formData.businessRegisteredName || !formData.taxId || !formData.phoneNumber || !formData.businessAddress}
+                                disabled={
+                                    !formData.businessRegisteredName || 
+                                    formData.businessRegisteredName.length < 2 ||
+                                    !formData.taxId || 
+                                    formData.taxId.length < 5 ||
+                                    !formData.phoneNumber || 
+                                    formData.phoneNumber.length < 10 ||
+                                    !formData.businessAddress ||
+                                    formData.businessAddress.length < 10
+                                }
                                 className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                             >
                                 Review & Submit
@@ -298,30 +339,30 @@ export default function KycSubmitPage() {
                 {step === 3 && (
                     <div className="space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900">Review & Submit</h2>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-700">
                             Please review your information before submitting.
                         </p>
 
                         <div className="bg-gray-50 rounded-lg p-4 space-y-3 mt-4">
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Business Name</span>
-                                <span className="font-medium">{formData.businessRegisteredName}</span>
+                                <span className="text-gray-800 font-medium">Business Name</span>
+                                <span className="font-semibold text-gray-900">{formData.businessRegisteredName}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Tax ID</span>
-                                <span className="font-medium">{formData.taxId}</span>
+                                <span className="text-gray-800 font-medium">Tax ID</span>
+                                <span className="font-semibold text-gray-900">{formData.taxId}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Phone</span>
-                                <span className="font-medium">{formData.phoneNumber}</span>
+                                <span className="text-gray-800 font-medium">Phone</span>
+                                <span className="font-semibold text-gray-900">{formData.phoneNumber}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Address</span>
-                                <span className="font-medium text-right max-w-[60%]">{formData.businessAddress}</span>
+                                <span className="text-gray-800 font-medium">Address</span>
+                                <span className="font-semibold text-gray-900 text-right max-w-[60%]">{formData.businessAddress}</span>
                             </div>
                             <hr className="my-2" />
                             <div className="flex justify-between">
-                                <span className="text-gray-500">Documents</span>
+                                <span className="text-gray-800 font-medium">Documents</span>
                                 <span className="text-emerald-600 font-medium">4/4 Uploaded ✓</span>
                             </div>
                         </div>
@@ -400,7 +441,7 @@ function DocumentUpload({
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{label}</p>
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-gray-700 truncate">
                         {file?.name || (isUploaded ? 'Uploaded' : 'Click to upload')}
                     </p>
                 </div>

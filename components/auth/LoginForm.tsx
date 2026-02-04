@@ -3,17 +3,37 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { authApi } from '@/services/auth.api';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { authApi, UserRole } from '@/services/auth.api';
 import { useAuthStore } from '@/stores/authStore';
 
 /**
  * Login Form Component
  * Email/password login with Google OAuth popup
  */
+/**
+ * Get dashboard path based on user role
+ */
+function getDashboardPath(role: UserRole): string {
+    switch (role) {
+        case 'SIMPLE_RECIPIENT':
+            return '/dashboard/recipient';
+        case 'NGO_RECIPIENT':
+            return '/dashboard/ngo-recipient';
+        case 'FOOD_SUPPLIER':
+            return '/dashboard/food-supplier';
+        case 'ADMIN':
+            return '/admin-dash';
+        default:
+            return '/dashboard';
+    }
+}
+
 export default function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const setUser = useAuthStore((state) => state.setUser);
+    const redirectTo = searchParams.get('redirect');
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -51,14 +71,16 @@ export default function LoginForm() {
                 role: 'SIMPLE_RECIPIENT', // Default role, ignored for existing users
             });
             setUser(user);
-            router.push('/');
+            // Redirect to original destination or role-based dashboard
+            const destination = redirectTo || getDashboardPath(user.role);
+            router.push(destination);
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Google login failed';
             setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
-    }, [setUser, router]);
+    }, [setUser, router, redirectTo]);
 
     /**
      * Open Google OAuth popup with full-screen experience
@@ -122,7 +144,9 @@ export default function LoginForm() {
                 password,
             });
             setUser(user);
-            router.push('/');
+            // Redirect to original destination or role-based dashboard
+            const destination = redirectTo || getDashboardPath(user.role);
+            router.push(destination);
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Invalid email or password';
             setError(errorMessage);
@@ -170,7 +194,7 @@ export default function LoginForm() {
                     {/* Header */}
                     <div className="text-center mb-8">
                         <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Welcome Back</h2>
-                        <p className="mt-2 text-gray-500">Sign in to your account</p>
+                        <p className="mt-2 text-gray-700 font-medium">Sign in to your account</p>
                     </div>
 
                     {/* Google Login */}
@@ -206,7 +230,7 @@ export default function LoginForm() {
                             <div className="w-full border-t border-gray-200/60" />
                         </div>
                         <div className="relative flex justify-center">
-                            <span className="px-4 bg-white/60 backdrop-blur text-sm text-gray-400">or</span>
+                            <span className="px-4 bg-white/60 backdrop-blur text-sm text-gray-600 font-medium">or</span>
                         </div>
                     </div>
 

@@ -61,7 +61,7 @@ export default function RoleSelection({ onSelect }: RoleSelectionProps) {
                 <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                     Join ChirpyNosh
                 </h2>
-                <p className="mt-2 text-gray-500">How would you like to participate?</p>
+                <p className="mt-2 text-gray-700 font-medium">How would you like to participate?</p>
             </div>
 
             <div className="space-y-3">
@@ -103,7 +103,7 @@ export default function RoleSelection({ onSelect }: RoleSelectionProps) {
                                 <h3 className="font-semibold text-gray-900 group-hover:text-gray-700 transition-colors">
                                     {option.title}
                                 </h3>
-                                <p className="mt-0.5 text-sm text-gray-500 group-hover:text-gray-600 transition-colors">
+                                <p className="mt-0.5 text-sm text-gray-700 group-hover:text-gray-800 font-medium transition-colors">
                                     {option.description}
                                 </p>
                             </div>

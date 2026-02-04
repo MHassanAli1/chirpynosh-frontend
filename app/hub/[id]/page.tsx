@@ -178,8 +178,8 @@ export default function ListingDetailPage() {
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-3 mb-2">
                 {listing.title}
               </h1>
-              <p className="text-gray-500">
-                by <span className="font-medium text-gray-700">{listing.organization?.name}</span>
+              <p className="text-gray-800 font-medium">
+                by <span className="font-semibold text-gray-900">{listing.organization?.name}</span>
               </p>
             </div>
 
@@ -194,9 +194,9 @@ export default function ListingDetailPage() {
                     {formatPrice(listing.originalPrice)}
                   </span>
                 )}
-                <span className="text-gray-500">per {listing.unit}</span>
+                <span className="text-gray-800 font-medium">per {listing.unit}</span>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-800 font-medium">
                 {listing.remainingStock} of {listing.totalStock} {listing.unit} remaining
               </p>
             </div>
@@ -208,8 +208,8 @@ export default function ListingDetailPage() {
                 <div className="flex items-start gap-3">
                   <span className="text-gray-400">🕐</span>
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Pickup Window</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm font-semibold text-gray-900">Pickup Window</p>
+                    <p className="text-sm text-gray-800 font-medium">
                       {formatDate(listing.pickupStartAt)} — {formatDate(listing.pickupEndAt)}
                     </p>
                   </div>
@@ -217,15 +217,15 @@ export default function ListingDetailPage() {
                 <div className="flex items-start gap-3">
                   <span className="text-gray-400">⏰</span>
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Expires</p>
-                    <p className="text-sm text-gray-500">{formatDate(listing.expiresAt)}</p>
+                    <p className="text-sm font-semibold text-gray-900">Expires</p>
+                    <p className="text-sm text-gray-800 font-medium">{formatDate(listing.expiresAt)}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <span className="text-gray-400">👥</span>
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Available For</p>
-                    <p className="text-sm text-gray-500">{claimerTypeLabel}</p>
+                    <p className="text-sm font-semibold text-gray-900">Available For</p>
+                    <p className="text-sm text-gray-800 font-medium">{claimerTypeLabel}</p>
                   </div>
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default function ListingDetailPage() {
             {listing.description && (
               <div className="mb-6">
                 <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-                <p className="text-gray-600 whitespace-pre-line">{listing.description}</p>
+                <p className="text-gray-800 whitespace-pre-line">{listing.description}</p>
               </div>
             )}
 

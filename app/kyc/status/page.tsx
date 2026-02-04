@@ -88,7 +88,7 @@ export default function KycStatusPage() {
 
                             <div className="space-y-3">
                                 <h3 className="font-medium text-gray-900">What happens next?</h3>
-                                <ul className="space-y-2 text-sm text-gray-600">
+                                <ul className="space-y-2 text-sm text-gray-800">
                                     <li className="flex items-start gap-2">
                                         <span className="text-emerald-500 mt-1">✓</span>
                                         Our team reviews your submitted documents
@@ -115,23 +115,23 @@ export default function KycStatusPage() {
                         <h3 className="font-medium text-gray-900">Submission Details</h3>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <span className="text-gray-500">Business Name</span>
-                                <p className="font-medium">{kycStatus.businessRegisteredName || '-'}</p>
+                                <span className="text-gray-800 font-medium">Business Name</span>
+                                <p className="font-semibold text-gray-900">{kycStatus.businessRegisteredName || '-'}</p>
                             </div>
                             <div>
-                                <span className="text-gray-500">Tax ID</span>
-                                <p className="font-medium">{kycStatus.taxId || '-'}</p>
+                                <span className="text-gray-800 font-medium">Tax ID</span>
+                                <p className="font-semibold text-gray-900">{kycStatus.taxId || '-'}</p>
                             </div>
                             <div>
-                                <span className="text-gray-500">Submitted</span>
-                                <p className="font-medium">
+                                <span className="text-gray-800 font-medium">Submitted</span>
+                                <p className="font-semibold text-gray-900">
                                     {kycStatus.submittedAt
                                         ? new Date(kycStatus.submittedAt).toLocaleDateString()
                                         : '-'}
                                 </p>
                             </div>
                             <div>
-                                <span className="text-gray-500">Status</span>
+                                <span className="text-gray-800 font-medium">Status</span>
                                 <p className={`font-medium ${kycStatus.status === 'PENDING' ? 'text-amber-600' :
                                         kycStatus.status === 'APPROVED' ? 'text-emerald-600' :
                                             'text-red-600'
@@ -147,7 +147,7 @@ export default function KycStatusPage() {
             {/* Help Section */}
             <div className="bg-white rounded-xl p-6 shadow-sm">
                 <h3 className="font-medium text-gray-900 mb-3">Need Help?</h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-800">
                     If you have questions about your verification status, please contact our support team at{' '}
                     <a href="mailto:support@chirpynosh.com" className="text-emerald-600 hover:underline">
                         support@chirpynosh.com

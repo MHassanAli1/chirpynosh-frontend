@@ -200,7 +200,7 @@ export function ListingForm({ listing, onSuccess }: ListingFormProps) {
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
               maxLength={500}
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-700 font-medium mt-1">
               {formData.description?.length || 0}/500 characters
             </p>
           </div>
@@ -298,7 +298,7 @@ export function ListingForm({ listing, onSuccess }: ListingFormProps) {
               Subsidized Price (per unit)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700 font-medium">$</span>
               <input
                 type="number"
                 id="subsidizedPrice"
@@ -310,7 +310,7 @@ export function ListingForm({ listing, onSuccess }: ListingFormProps) {
                 className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">Set to 0 for free donations</p>
+            <p className="text-xs text-gray-700 font-medium mt-1">Set to 0 for free donations</p>
           </div>
         </div>
 

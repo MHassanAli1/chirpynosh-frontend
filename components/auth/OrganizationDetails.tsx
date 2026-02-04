@@ -55,7 +55,7 @@ export default function OrganizationDetails({
                 <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
                     Organization Details
                 </h2>
-                <p className="mt-2 text-gray-500">Tell us about your organization</p>
+                <p className="mt-2 text-gray-700 font-medium">Tell us about your organization</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

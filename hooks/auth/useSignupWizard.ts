@@ -1,9 +1,27 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { authApi, SignupPayload, GoogleAuthPayload } from '@/services/auth.api';
+import { authApi, SignupPayload, GoogleAuthPayload, UserRole } from '@/services/auth.api';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
+
+/**
+ * Get dashboard path based on user role
+ */
+function getDashboardPath(role: UserRole): string {
+    switch (role) {
+        case 'SIMPLE_RECIPIENT':
+            return '/dashboard/recipient';
+        case 'NGO_RECIPIENT':
+            return '/dashboard/ngo-recipient';
+        case 'FOOD_SUPPLIER':
+            return '/dashboard/food-supplier';
+        case 'ADMIN':
+            return '/admin-dash';
+        default:
+            return '/dashboard';
+    }
+}
 
 /**
  * User roles available for signup (ADMIN excluded)
@@ -189,12 +207,8 @@ export function useSignupWizard() {
             const { user, isNewUser } = await authApi.googleAuth(payload);
             setUser(user);
             
-            // Redirect based on result
-            if (isNewUser) {
-                router.push('/');
-            } else {
-                router.push('/');
-            }
+            // Redirect to role-based dashboard
+            router.push(getDashboardPath(user.role));
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Google signup failed';
             setError(errorMessage);
@@ -271,7 +285,7 @@ export function useSignupWizard() {
         try {
             const result = await authApi.verifyOtp(state.email.trim().toLowerCase(), otp);
             setUser(result.user);
-            router.push('/');
+            router.push(getDashboardPath(result.user.role));
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Invalid OTP';
             setError(errorMessage);

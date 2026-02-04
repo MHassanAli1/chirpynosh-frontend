@@ -87,16 +87,38 @@ export default function Header({ user, onLogout }: HeaderProps) {
     // Check if active link
     const isActiveLink = (href: string) => pathname === href;
 
-    // Get role-specific menu item
+    // Get role-specific menu item based on user role
     const getRoleMenuItem = () => {
         if (!user) return null;
-        if (user.role === 'food_supplier') {
-            return { label: 'My Listings', href: '/my-listings' };
+        switch (user.role) {
+            case 'food_supplier':
+                return { label: 'My Listings', href: '/dashboard/food-supplier/listings' };
+            case 'ngo_recipient':
+                return { label: 'My Claims', href: '/dashboard/ngo-recipient/claims' };
+            case 'simple_recipient':
+                return { label: 'My Claims', href: '/dashboard/recipient/claims' };
+            default:
+                return null;
         }
-        return { label: 'My Claims', href: '/my-claims' };
+    };
+
+    // Get profile link based on user role
+    const getProfileLink = () => {
+        if (!user) return '/profile';
+        switch (user.role) {
+            case 'food_supplier':
+                return '/dashboard/food-supplier/profile';
+            case 'ngo_recipient':
+                return '/dashboard/ngo-recipient/profile';
+            case 'simple_recipient':
+                return '/dashboard/recipient/profile';
+            default:
+                return '/profile';
+        }
     };
 
     const roleMenuItem = getRoleMenuItem();
+    const profileLink = getProfileLink();
 
     return (
         <header
@@ -289,7 +311,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
                                     {/* Menu Items */}
                                     <div className="py-1">
                                         <Link
-                                            href="/profile"
+                                            href={profileLink}
                                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                                             onClick={() => setIsProfileOpen(false)}
                                         >
