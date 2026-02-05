@@ -44,11 +44,12 @@ const NAV_LINKS: NavLink[] = [
 ];
 
 /**
- * ChirpyNosh Modern Header Component
+ * ChirpyNosh Modern Floating Header Component
  * Features:
- * - Glassmorphism design
+ * - Floating pill design when scrolled (Apple/Stripe style)
+ * - Glassmorphism with subtle blur
  * - Gradient brand text
- * - Sticky with smooth animations
+ * - Smooth morph animation on scroll
  * - Auth-aware profile/buttons
  * - Mobile responsive
  */
@@ -59,13 +60,13 @@ export default function Header({ user, onLogout }: HeaderProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const profileRef = useRef<HTMLDivElement>(null);
 
-    // Handle scroll effect
+    // Handle scroll effect with threshold
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 10);
+            setIsScrolled(window.scrollY > 50);
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
@@ -123,14 +124,24 @@ export default function Header({ user, onLogout }: HeaderProps) {
     return (
         <header
             className={`
-        fixed top-0 left-0 right-0 z-30
-        transition-all duration-500 ease-out
+        fixed left-0 right-0 z-50
+        transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
         ${isScrolled
-                    ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-white/30'
-                    : 'bg-white/70 backdrop-blur-lg border-b border-white/20'
+                    ? 'top-4 mx-4 md:mx-8 lg:mx-auto lg:max-w-5xl'
+                    : 'top-0 mx-0'
                 }
       `}
         >
+            {/* Inner container with floating pill design */}
+            <div
+                className={`
+          transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
+          ${isScrolled
+                        ? 'bg-white/85 backdrop-blur-2xl shadow-lg shadow-black/[0.08] border border-white/50 rounded-2xl'
+                        : 'bg-white/70 backdrop-blur-xl border-b border-gray-100/50'
+                    }
+        `}
+            >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 lg:h-18">
 
@@ -435,6 +446,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
                         )}
                     </nav>
                 </div>
+            </div>
             </div>
         </header>
     );
