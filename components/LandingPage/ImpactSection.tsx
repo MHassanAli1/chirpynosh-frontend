@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { prefersReducedMotion } from '@/lib/gsap';
+import Leaf3D, { Leaf3DHandle } from './Leaf3D';
 
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
@@ -72,7 +71,7 @@ const IMPACT_STATS: ImpactStat[] = [
  * 
  * Main WOW section with 3D leaf model and animated stats.
  * Features:
- * - Scroll-scrubbed 3D leaf rotation
+ * - Scroll-scrubbed 3D leaf rotation using Leaf3D component
  * - Idle float animation when scroll stops
  * - Count-up stats animation
  * - Pinned for 200vh scroll storytelling
@@ -81,9 +80,10 @@ const IMPACT_STATS: ImpactStat[] = [
  */
 export default function ImpactSection() {
     const sectionRef = useRef<HTMLElement>(null);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const leaf3DRef = useRef<Leaf3DHandle>(null);
     const statsContainerRef = useRef<HTMLDivElement>(null);
     const headingRef = useRef<HTMLDivElement>(null);
+    const [modelLoaded, setModelLoaded] = useState(false);
     const [statValues, setStatValues] = useState<{ [key: string]: number }>({
         co2: 0,
         food: 0,
@@ -94,206 +94,6 @@ export default function ImpactSection() {
         food: false,
         meals: false,
     });
-    
-    // Three.js refs
-    const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-    const sceneRef = useRef<THREE.Scene | null>(null);
-    const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-    const leafRef = useRef<THREE.Object3D | null>(null);
-    const animationFrameRef = useRef<number | null>(null);
-    const scrollProgressRef = useRef(0);
-    const idleTimeRef = useRef(0);
-    const [modelLoaded, setModelLoaded] = useState(false);
-
-    /**
-     * Create fallback leaf geometry if model fails to load
-     */
-    const createFallbackLeaf = useCallback((scene: THREE.Scene) => {
-        // Create a stylized leaf shape using custom geometry
-        const shape = new THREE.Shape();
-        
-        // Leaf outline
-        shape.moveTo(0, -1.5);
-        shape.quadraticCurveTo(1.2, -0.5, 1, 0.5);
-        shape.quadraticCurveTo(0.8, 1.2, 0, 1.5);
-        shape.quadraticCurveTo(-0.8, 1.2, -1, 0.5);
-        shape.quadraticCurveTo(-1.2, -0.5, 0, -1.5);
-
-        const extrudeSettings = {
-            depth: 0.15,
-            bevelEnabled: true,
-            bevelThickness: 0.05,
-            bevelSize: 0.05,
-            bevelSegments: 3,
-        };
-
-        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0x4ade80,
-            roughness: 0.4,
-            metalness: 0.1,
-            emissive: 0x166534,
-            emissiveIntensity: 0.15,
-            side: THREE.DoubleSide,
-        });
-
-        const leaf = new THREE.Mesh(geometry, material);
-        leaf.rotation.x = -0.3;
-        scene.add(leaf);
-        leafRef.current = leaf;
-        setModelLoaded(true);
-    }, []);
-
-    /**
-     * Initialize Three.js scene with leaf model
-     */
-    const initThreeJS = useCallback(() => {
-        if (!canvasRef.current) return;
-
-        const canvas = canvasRef.current;
-        const container = canvas.parentElement;
-        if (!container) return;
-
-        // Get actual dimensions - use minimum fallback if container not sized yet
-        const width = container.clientWidth || 400;
-        const height = container.clientHeight || 400;
-
-        // Scene setup
-        const scene = new THREE.Scene();
-        sceneRef.current = scene;
-
-        // Camera setup
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-        camera.position.set(0, 0, 5);
-        cameraRef.current = camera;
-
-        // Renderer setup - GPU optimized
-        const renderer = new THREE.WebGLRenderer({
-            canvas,
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance',
-        });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.outputColorSpace = THREE.SRGBColorSpace;
-        rendererRef.current = renderer;
-
-        // Soft ambient lighting - no shadows
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-        scene.add(ambientLight);
-
-        // Directional light for depth
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 5, 5);
-        scene.add(directionalLight);
-
-        // Rim light for edge glow effect
-        const rimLight = new THREE.DirectionalLight(0x84cc16, 0.5);
-        rimLight.position.set(-5, 2, -3);
-        scene.add(rimLight);
-
-        // Back light for more visibility
-        const backLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        backLight.position.set(0, -5, -5);
-        scene.add(backLight);
-
-        // Load GLTF model with fallback
-        const loader = new GLTFLoader();
-        loader.load(
-            '/leaf.glb',
-            (gltf) => {
-                const model = gltf.scene;
-                
-                // Center and scale the model
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center);
-                
-                // Scale to fit nicely
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 2.5 / maxDim;
-                model.scale.multiplyScalar(scale);
-
-                // Apply green-tinted material to all meshes
-                model.traverse((child) => {
-                    if (child instanceof THREE.Mesh) {
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: 0x4ade80,
-                            roughness: 0.4,
-                            metalness: 0.1,
-                            emissive: 0x166534,
-                            emissiveIntensity: 0.15,
-                        });
-                    }
-                });
-
-                scene.add(model);
-                leafRef.current = model;
-                setModelLoaded(true);
-            },
-            undefined,
-            (error) => {
-                console.error('Error loading leaf model, using fallback:', error);
-                // Use fallback geometry
-                createFallbackLeaf(scene);
-            }
-        );
-
-        // Handle resize with debounce-like behavior
-        const handleResize = () => {
-            if (!container || !camera || !renderer) return;
-            const newWidth = container.clientWidth || 400;
-            const newHeight = container.clientHeight || 400;
-            camera.aspect = newWidth / newHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(newWidth, newHeight);
-        };
-        window.addEventListener('resize', handleResize);
-
-        // Also resize after a short delay to catch late layout
-        setTimeout(handleResize, 100);
-        setTimeout(handleResize, 500);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [createFallbackLeaf]);
-
-    /**
-     * Animation loop with idle float - always renders when refs are available
-     */
-    const animate = useCallback(() => {
-        const renderer = rendererRef.current;
-        const scene = sceneRef.current;
-        const camera = cameraRef.current;
-
-        // Always render if we have the basics, even without leaf
-        if (renderer && scene && camera) {
-            const leaf = leafRef.current;
-            
-            if (leaf) {
-                // Increment idle time
-                idleTimeRef.current += 0.016;
-
-                // Idle float animation - gentle bob
-                const floatOffset = Math.sin(idleTimeRef.current * 1.5) * 0.08;
-                leaf.position.y = floatOffset;
-
-                // Subtle idle rotation when not scrolling
-                const idleRotation = Math.sin(idleTimeRef.current * 0.8) * 0.03;
-                leaf.rotation.z = idleRotation;
-                
-                // Continuous slow rotation for visual interest
-                leaf.rotation.y += 0.003;
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        animationFrameRef.current = requestAnimationFrame(animate);
-    }, []);
 
     /**
      * Setup GSAP animations and ScrollTrigger
@@ -306,23 +106,12 @@ export default function ImpactSection() {
 
         if (!section || !statsContainer || !heading) return;
 
-        // Initialize Three.js
-        const cleanup = initThreeJS();
-        
-        // Start render loop immediately
-        animationFrameRef.current = requestAnimationFrame(animate);
-
         if (reducedMotion) {
             // Show everything immediately for reduced motion
             gsap.set([heading, statsContainer], { opacity: 1, y: 0 });
             setStatValues({ co2: 12847, food: 54320, meals: 28750 });
             setSuffixesVisible({ co2: true, food: true, meals: true });
-            return () => {
-                cleanup?.();
-                if (animationFrameRef.current) {
-                    cancelAnimationFrame(animationFrameRef.current);
-                }
-            };
+            return;
         }
 
         const ctx = gsap.context(() => {
@@ -336,15 +125,13 @@ export default function ImpactSection() {
                     start: 'top top',
                     end: '+=200%',
                     pin: true,
-                    scrub: 1,
+                    scrub: 1.5, // Smoother scrub for buttery feel
                     onUpdate: (self) => {
-                        scrollProgressRef.current = self.progress;
-                        idleTimeRef.current = 0; // Reset idle on scroll
-                        
-                        // Rotate leaf based on scroll
-                        if (leafRef.current) {
-                            leafRef.current.rotation.y = self.progress * Math.PI * 2;
-                            leafRef.current.rotation.x = Math.sin(self.progress * Math.PI) * 0.3;
+                        // Pass scroll progress to Leaf3D
+                        // Leaf3D handles: lerp interpolation, Y rotation (720°), color transition, floating
+                        const leaf3D = leaf3DRef.current;
+                        if (leaf3D) {
+                            leaf3D.setScrollProgress(self.progress);
                         }
                     },
                 },
@@ -373,6 +160,10 @@ export default function ImpactSection() {
 
                 mainTl.to({}, {
                     duration: endProgress - startProgress,
+                    onStart: function() {
+                        // Trigger glow effect on leaf when stat starts counting
+                        leaf3DRef.current?.triggerGlow();
+                    },
                     onUpdate: function() {
                         const progress = this.progress();
                         const currentValue = Math.floor(stat.value * progress);
@@ -389,20 +180,13 @@ export default function ImpactSection() {
 
         return () => {
             ctx.revert();
-            cleanup?.();
-            if (animationFrameRef.current) {
-                cancelAnimationFrame(animationFrameRef.current);
-            }
-            if (rendererRef.current) {
-                rendererRef.current.dispose();
-            }
         };
-    }, [initThreeJS, animate]);
+    }, []);
 
     return (
         <section
             ref={sectionRef}
-            className="relative min-h-screen w-full bg-gradient-to-b from-emerald-50 via-white to-emerald-50/50 overflow-hidden"
+            className="relative z-10 min-h-screen w-full bg-gradient-to-b from-emerald-50 via-white to-emerald-50/50 overflow-hidden"
         >
             {/* Decorative background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -416,15 +200,15 @@ export default function ImpactSection() {
                 
                 {/* 3D Leaf Canvas - Left side */}
                 <div className="relative w-full lg:w-1/2 h-[400px] lg:h-[600px] flex items-center justify-center">
-                    <canvas
-                        ref={canvasRef}
-                        className="w-full h-full"
-                        style={{ touchAction: 'none' }}
+                    <Leaf3D 
+                        ref={leaf3DRef} 
+                        onLoad={() => setModelLoaded(true)}
+                        reducedMotion={prefersReducedMotion()}
                     />
                     
                     {/* Loading indicator */}
                     {!modelLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-500 rounded-full animate-spin" />
                         </div>
                     )}
@@ -472,7 +256,7 @@ export default function ImpactSection() {
                                 
                                 <div className="relative flex items-start gap-4">
                                     {/* Icon */}
-                                    <div className="flex-shrink-0 p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl text-emerald-600 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="shrink-0 p-3 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-xl text-emerald-600 group-hover:scale-110 transition-transform duration-300">
                                         {stat.icon}
                                     </div>
                                     

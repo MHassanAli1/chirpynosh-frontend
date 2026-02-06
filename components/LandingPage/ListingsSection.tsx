@@ -347,7 +347,7 @@ export default function ListingsSection() {
     return (
         <section
             ref={sectionRef}
-            className="relative w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 py-24"
+            className="relative z-30 w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 py-24"
         >
             {/* Decorative background */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">

@@ -12,16 +12,14 @@ import { getListingImageUrl } from '@/services/listings.api';
  * Shows real-time data from backend
  */
 export default function NgoRecipientDashboard() {
-    const { user, isAuthenticated } = useAuthStore();
+    const { user } = useAuthStore();
     const [stats, setStats] = useState<ClaimStats | null>(null);
     const [recentClaims, setRecentClaims] = useState<MyClaim[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchDashboardData();
-        }
-    }, [isAuthenticated]);
+        fetchDashboardData();
+    }, []);
 
     const fetchDashboardData = async () => {
         try {

@@ -84,6 +84,14 @@ export default function Header({ user, onLogout }: HeaderProps) {
 
     // Check if user can add listings
     const canAddListing = !user || user.role === 'food_supplier';
+    
+    // Get Add Listing href - food suppliers go to add-listing, others to signup
+    const getAddListingHref = () => {
+        if (user && user.role === 'food_supplier') {
+            return '/dashboard/food-supplier/listings';
+        }
+        return '/signup';
+    };
 
     // Check if active link
     const isActiveLink = (href: string) => pathname === href;
@@ -137,8 +145,8 @@ export default function Header({ user, onLogout }: HeaderProps) {
                 className={`
           transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]
           ${isScrolled
-                        ? 'bg-white/85 backdrop-blur-2xl shadow-lg shadow-black/[0.08] border border-white/50 rounded-2xl'
-                        : 'bg-white/70 backdrop-blur-xl border-b border-gray-100/50'
+                        ? 'bg-white/70 backdrop-blur-3xl shadow-2xl shadow-emerald-500/10 border border-white/60 rounded-2xl ring-1 ring-white/30'
+                        : 'bg-white/50 backdrop-blur-2xl border-b border-white/40'
                     }
         `}
             >
@@ -202,6 +210,26 @@ export default function Header({ user, onLogout }: HeaderProps) {
                                 {link.label}
                             </Link>
                         ))}
+
+                        {/* Listings link - only for logged-in food suppliers */}
+                        {user?.role === 'food_supplier' && (
+                            <Link
+                                href="/dashboard/food-supplier/listings"
+                                className={`
+                  relative px-4 py-2 rounded-full text-sm font-medium
+                  transition-all duration-300 ease-out
+                  ${isActiveLink('/dashboard/food-supplier/listings')
+                                        ? 'bg-[#ecfdf5] text-emerald-600'
+                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/60'
+                                    }
+                `}
+                            >
+                                {isActiveLink('/dashboard/food-supplier/listings') && (
+                                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full" />
+                                )}
+                                Listings
+                            </Link>
+                        )}
                     </nav>
 
                     {/* Right Section - Actions */}
@@ -233,7 +261,7 @@ export default function Header({ user, onLogout }: HeaderProps) {
                         {/* Add Listing Button - Show if logged out OR food_supplier */}
                         {canAddListing && (
                             <Link
-                                href="/add-listing"
+                                href={getAddListingHref()}
                                 className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full
                            bg-white border border-gray-200 text-gray-700 text-sm font-medium
                            shadow-sm hover:shadow-md hover:border-gray-300
@@ -411,10 +439,27 @@ export default function Header({ user, onLogout }: HeaderProps) {
                             </Link>
                         ))}
 
+                        {/* Mobile Listings link - only for logged-in food suppliers */}
+                        {user?.role === 'food_supplier' && (
+                            <Link
+                                href="/dashboard/food-supplier/listings"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className={`
+                  px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
+                  ${isActiveLink('/dashboard/food-supplier/listings')
+                                        ? 'bg-[#ecfdf5] text-emerald-600'
+                                        : 'text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+                                    }
+                `}
+                            >
+                                Listings
+                            </Link>
+                        )}
+
                         {/* Mobile Add Listing */}
                         {canAddListing && (
                             <Link
-                                href="/add-listing"
+                                href={getAddListingHref()}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="flex items-center justify-center gap-2 px-4 py-3 mt-2
                            bg-gray-100 rounded-xl text-sm font-medium text-gray-700

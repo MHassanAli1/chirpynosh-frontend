@@ -68,7 +68,6 @@ export default async function DashboardLayout({
 
                     {userRole === 'NGO_RECIPIENT' && (
                         <>
-                            <DashboardNavItem href="/dashboard/ngo-recipient/browse" icon="🍕" label="Browse Food" />
                             <DashboardNavItem href="/dashboard/ngo-recipient/claims" icon="📋" label="My Claims" />
                             <DashboardNavItem href="/dashboard/ngo-recipient/profile" icon="🏢" label="Organization" />
                         </>

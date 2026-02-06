@@ -318,6 +318,17 @@ export const getVerifiedSuppliers = async (): Promise<{
   return data;
 };
 
+/**
+ * Get verified NGOs
+ */
+export const getVerifiedNGOs = async (): Promise<{
+  success: boolean;
+  ngos: { id: string; name: string; claimCount: number }[];
+}> => {
+  const { data } = await hubApi.get('/ngos');
+  return data;
+};
+
 // ============================================================================
 // CLOUDINARY URL HELPERS
 // ============================================================================
