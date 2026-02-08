@@ -22,6 +22,9 @@ export type ClaimerType = 'NGO' | 'INDIVIDUAL' | 'BOTH';
 export type ListingStatus = 'ACTIVE' | 'PAUSED' | 'SOLD_OUT' | 'EXPIRED' | 'CANCELLED';
 export type ClaimStatus = 'PENDING' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED';
 
+// Alias for convenience
+export type Listing = FoodListing;
+
 export interface FoodListing {
   id: string;
   orgId: string;

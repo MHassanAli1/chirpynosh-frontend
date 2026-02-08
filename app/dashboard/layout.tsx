@@ -8,6 +8,8 @@ import {
 } from '@/lib/auth.server';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'Dashboard - ChirpyNosh',
     description: 'Your ChirpyNosh dashboard',

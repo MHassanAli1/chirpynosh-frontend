@@ -27,7 +27,7 @@ export default function FoodSupplierDashboard() {
 
             // Fetch recent listings
             const listingsResponse = await getMyListings({ limit: 5 });
-            setListings(listingsResponse.listings);
+            setListings(listingsResponse.listings ?? []);
         } catch (error) {
             console.error('Failed to fetch dashboard data:', error);
         } finally {
@@ -239,9 +239,9 @@ export default function FoodSupplierDashboard() {
                                 className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                             >
                                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center overflow-hidden">
-                                    {listing.images?.[0] ? (
+                                    {listing.imageKeys?.[0] ? (
                                         <Image
-                                            src={listing.images[0]}
+                                            src={listing.imageKeys[0]}
                                             alt={listing.title}
                                             width={48}
                                             height={48}
